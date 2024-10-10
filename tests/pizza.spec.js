@@ -91,3 +91,11 @@ test('login and buy pizza', async ({page}) => {
   await expect(page.locator('h3')).toContainText('JWT Pizza - invalid');
 })
 
+test('failed order - unauthorized', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Order' }).click();
+  await page.getByRole('link', { name: 'Image Description ag07b29104' }).click();
+  await expect(page.getByText('Awesome is a click away')).toBeVisible();
+  expect(await page.getByRole('button', { name: 'Checkout' }).isDisabled()).toBeTruthy();
+})
+
