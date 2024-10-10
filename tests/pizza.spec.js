@@ -128,3 +128,76 @@ test('franchise page', async ({page}) => {
   await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
   await expect(page.getByRole('alert')).toContainText('If you are already a franchisee, pleaseloginusing your franchise account');
 })
+
+test('register', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByPlaceholder('Full name').fill('Alex');
+  await page.getByPlaceholder('Full name').press('Tab');
+  await page.getByPlaceholder('Email address').fill('me@memail.com');
+  await page.getByPlaceholder('Email address').press('Tab');
+  await page.getByPlaceholder('Password').fill('l');
+  await page.getByRole('button', { name: 'Register' }).click();
+  await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
+})
+
+test('navigation', async ({page}) => {
+  // navigate to pages
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Order' }).click();
+  await page.getByRole('link', { name: 'home' }).click();
+  await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'home' }).click();
+  await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
+  await page.getByRole('link', { name: 'franchise-dashboard' }).click();
+  await expect(page.getByText('So you want a piece of the')).toBeVisible();
+  await page.getByRole('link', { name: 'home' }).click();
+  await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('link', { name: 'home' }).click();
+  await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Order now' }).click();
+  await expect(page.getByText('Awesome is a click away')).toBeVisible();
+  await page.getByRole('link', { name: 'home' }).click();
+  await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
+  await page.getByRole('link', { name: 'About' }).click();
+  await expect(page.getByText('The secret sauce')).toBeVisible();
+  await page.getByRole('link', { name: 'home' }).click();
+  await page.getByRole('link', { name: 'History' }).click();
+  await expect(page.getByText('Mama Rucci, my my')).toBeVisible();
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Franchise' }).click();
+  await expect(page.getByText('So you want a piece of the')).toBeVisible();
+  await page.getByRole('link', { name: 'home' }).click();
+
+  // check review text
+  await page.locator('.hs-carousel-active\\:bg-blue-700').first().click();
+  await expect(page.getByText('Most amazing pizza experience')).toBeVisible();
+  await page.locator('.hs-carousel-pagination > span:nth-child(2)').click();
+  await expect(page.getByText('Milan reborn! — 张伟, Provo')).toBeVisible();
+  await page.locator('span:nth-child(3)').click();
+  await expect(page.getByText('All I can say is WOW! — José')).toBeVisible();
+  await page.locator('span:nth-child(4)').click();
+  await expect(page.getByText('Best pizza ever. I can eat')).toBeVisible();
+  await expect(page.getByRole('main').getByRole('img')).toBeVisible();
+})
+
+test('admin pages', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Login', exact: true }).click();
+  await page.getByPlaceholder('Email address').fill('b@jwt.com');
+  await page.getByPlaceholder('Email address').press('Tab');
+  await page.getByPlaceholder('Password').fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'Admin' }).click();
+  await page.getByText('Mama Ricci\'s kitchen').click();
+  await page.getByRole('button', { name: 'Add Franchise' }).click();
+  await page.getByPlaceholder('franchise name').click();
+  await page.getByPlaceholder('franchise name').fill('Me');
+  await page.getByPlaceholder('franchise name').press('Tab');
+  await page.getByPlaceholder('franchisee admin email').fill('b@jwt.com');
+  await page.getByRole('button', { name: 'Create' }).click();
+  await expect(page.getByRole('cell', { name: 'Me' })).toBeVisible();
+  await page.getByRole('row', { name: 'Me admin Close' }).getByRole('button').click();
+  await expect(page.getByText('Sorry to see you go')).toBeVisible();
+  await page.getByRole('button', { name: 'Close' }).click();
+})
