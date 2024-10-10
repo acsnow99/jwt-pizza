@@ -92,10 +92,39 @@ test('login and buy pizza', async ({page}) => {
 })
 
 test('failed order - unauthorized', async ({page}) => {
+  await page.route('*/**/api/order/menu', async (route) => {
+    const menuRes = [
+      { id: 1, title: 'Veggie', image: 'pizza1.png', price: 0.0038, description: 'A garden of delight' },
+      { id: 2, title: 'Pepperoni', image: 'pizza2.png', price: 0.0042, description: 'Spicy treat' },
+    ];
+    expect(route.request().method()).toBe('GET');
+    await route.fulfill({ json: menuRes });
+  });
+
   await page.goto('/');
   await page.getByRole('link', { name: 'Order' }).click();
-  await page.getByRole('link', { name: 'Image Description ag07b29104' }).click();
+  await page.getByRole('link', { name: 'Image Description Veggie' }).click();
   await expect(page.getByText('Awesome is a click away')).toBeVisible();
   expect(await page.getByRole('button', { name: 'Checkout' }).isDisabled()).toBeTruthy();
 })
 
+test('franchise page', async ({page}) => {
+  await page.route('*/**/api/auth', async (route) => {
+    const loginReq = { email: 'd@jwt.com', password: 'a' };
+    const loginRes = { user: { id: 3, name: 'Kai Chen', email: 'd@jwt.com', roles: [{ role: 'franchisee' }] }, token: 'abcdef' };
+    expect(route.request().method()).toBe('PUT');
+    expect(route.request().postDataJSON()).toMatchObject(loginReq);
+    await route.fulfill({ json: loginRes });
+  });
+
+  await page.goto('/');
+  await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
+  await expect(page.getByRole('alert')).toContainText('If you are already a franchisee, pleaseloginusing your franchise account');
+  await page.getByRole('link', { name: 'Login', exact: true }).click();
+  await page.getByPlaceholder('Email address').fill('d@jwt.com');
+  await page.getByPlaceholder('Email address').press('Tab');
+  await page.getByPlaceholder('Password').fill('a');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
+  await expect(page.getByRole('alert')).toContainText('If you are already a franchisee, pleaseloginusing your franchise account');
+})
