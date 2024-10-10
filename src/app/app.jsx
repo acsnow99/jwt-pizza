@@ -75,7 +75,7 @@ export default function App() {
     { title: 'Docs', to: '/docs/:docType?', component: <Docs />, display: [] },
     { title: 'Opps', to: '*', component: <NotFound />, display: [] },
   ];
-
+  
   return (
     <div className='bg-gray-800'>
       <Header user={user} navItems={(user, navItems)} />
