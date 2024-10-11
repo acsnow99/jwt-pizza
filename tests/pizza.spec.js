@@ -115,13 +115,20 @@ test('franchise page unauthorized', async ({page}) => {
 })
 
 test('register', async ({page}) => {
+  await page.route('*/**/api/auth', async (route) => {
+    const loginReq = { name: 'Kai', email: 'd@jwt.com', password: 'a' };
+    const loginRes = { user: { id: 3, name: 'Kai', email: 'd@jwt.com', roles: [{ role: 'diner' }] }, token: 'abcdef' };
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().postDataJSON()).toMatchObject(loginReq);
+    await route.fulfill({ json: loginRes });
+  });
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
-  await page.getByPlaceholder('Full name').fill('Alex');
+  await page.getByPlaceholder('Full name').fill('Kai');
   await page.getByPlaceholder('Full name').press('Tab');
-  await page.getByPlaceholder('Email address').fill('me@memail.com');
+  await page.getByPlaceholder('Email address').fill('d@jwt.com');
   await page.getByPlaceholder('Email address').press('Tab');
-  await page.getByPlaceholder('Password').fill('l');
+  await page.getByPlaceholder('Password').fill('a');
   await page.getByRole('button', { name: 'Register' }).click();
   await expect(page.getByText('The web\'s best pizza', { exact: true })).toBeVisible();
 })
@@ -188,6 +195,7 @@ test('navigation', async ({page}) => {
 
 test('admin and franchise pages', async ({page}) => {
   await page.goto('/');
+  // TODO: debug why the login fails on CI
 
   // login admin
   await page.getByRole('link', { name: 'Login', exact: true }).click();
