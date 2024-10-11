@@ -89,6 +89,41 @@ test('login and buy pizza', async ({page}) => {
   await expect(page.getByRole('heading')).toContainText('Here is your JWT Pizza!');
   await page.getByRole('button', { name: 'Verify' }).click();
   await expect(page.locator('h3')).toContainText('JWT Pizza - invalid');
+
+  await page.route('*/**/api/order/verify', async (route) => {
+    const createRes =  {
+      "message": "valid",
+      "payload": {
+          "vendor": {
+              "id": "as2826",
+              "name": "Alex Snow"
+          },
+          "diner": {
+              "id": 1,
+              "name": "常用名字",
+              "email": "a@jwt.com"
+          },
+          "order": {
+              "items": [
+                  {
+                      "menuId": 1,
+                      "description": "ag07b29104",
+                      "price": 0.001
+                  }
+              ],
+              "storeId": "26",
+              "franchiseId": 58,
+              "id": 1
+          }
+      }
+  };
+
+    expect(route.request().method()).toBe('POST');
+    await route.fulfill({ json: createRes });
+  });
+  await page.locator('div').filter({ hasText: /^JWT Pizza - invalid$/ }).getByRole('button').click();
+  await page.getByRole('button', { name: 'Verify' }).click();
+  await expect(page.locator('h3')).toContainText('JWT Pizza - valid');
 })
 
 test('failed order - unauthorized', async ({page}) => {
@@ -135,6 +170,7 @@ test('register', async ({page}) => {
 
 test('navigation', async ({page}) => {
   // navigate to pages
+  await page.goto('');
   await page.goto('/');
   await page.getByRole('link', { name: 'Order' }).click();
   await page.getByRole('link', { name: 'home' }).click();
