@@ -257,6 +257,37 @@ test('admin and franchise pages', async ({page}) => {
     }
   });
 
+  await page.route('*/**/api/franchise/3', async (route) => {
+    const createRes = [ {
+      "id": 57,
+      "name": "Me",
+      "admins": [
+          {
+              "id": 1,
+              "name": "常用名字",
+              "email": "a@jwt.com"
+          }
+      ],
+      "stores": []
+  }];
+
+    expect(route.request().method()).toBe('GET');
+
+    await route.fulfill({ json: createRes });
+  });
+
+  await page.route('*/**/api/franchise/9/store', async (route) => {
+    const createReq = {
+      "name": "store",
+    }
+    const createRes = {"id":25, "franchiseId":9, "name":"store"};
+
+    expect(route.request().method()).toBe('POST');
+    expect(route.request().postDataJSON()).toMatchObject(createReq);
+
+    await route.fulfill({ json: createRes });
+  });
+
 
   // login admin
   await page.getByRole('link', { name: 'Login', exact: true }).click();
@@ -276,24 +307,23 @@ test('admin and franchise pages', async ({page}) => {
   await page.getByRole('button', { name: 'Create' }).click();
   await expect(page.getByRole('cell', { name: 'Me' })).toBeVisible();
 
-  /*
-  // check out franchise page
-  await page.getByRole('link', { name: 'Franchise' }).click();
-  await expect(page.getByText('Me', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Create store' }).click();
-  await page.getByPlaceholder('store name').click();
-  await page.getByPlaceholder('store name').fill('Provo Me');
-  await page.getByRole('button', { name: 'Create' }).click();
-  await expect(page.getByRole('cell', { name: 'Provo Me' })).toBeVisible();
-  await page.getByRole('button', { name: 'Close' }).click();
-  await expect(page.getByText('Sorry to see you go')).toBeVisible();
-  await page.getByRole('button', { name: 'Close' }).click();
-  await expect(page.getByRole('cell', { name: 'Provo Me' })).not.toBeVisible();
-  await page.getByRole('link', { name: 'Admin' }).click();
-*/
-
   // delete franchise
   await page.getByRole('row', { name: 'Me a Close' }).getByRole('button').click();
   await expect(page.getByText('Sorry to see you go')).toBeVisible();
   await page.getByRole('button', { name: 'Close' }).click();
+
+  
+  // check out franchise page
+  await page.getByText('Franchise', { exact: true }).click();
+  await expect(page.getByText('Me', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Create store' }).click();
+  await page.getByPlaceholder('store name').click();
+  await page.getByPlaceholder('store name').fill('store');
+  await page.getByRole('button', { name: 'Create' }).click();
+  // await expect(page.getByRole('cell', { name: 'store' })).toBeVisible();
+  // await page.getByRole('button', { name: 'Close' }).click();
+  // await expect(page.getByText('Sorry to see you go')).toBeVisible();
+  // await page.getByRole('button', { name: 'Close' }).click();
+  // await expect(page.getByRole('cell', { name: 'close' })).not.toBeVisible();
+  // await page.getByRole('link', { name: 'Admin' }).click();
 })
