@@ -76,6 +76,8 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     env:
+      name: production
+      url: https://pizza.sunchasergame.click
       version: ${{needs.build.outputs.version}}
     steps:
       - name: Create OIDC token to AWS
