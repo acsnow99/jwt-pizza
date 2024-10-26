@@ -79,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
+      url: https://pizza.sunchasergame.click
     env:
       version: ${{needs.build.outputs.version}}
     steps:
