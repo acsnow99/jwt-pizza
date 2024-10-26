@@ -71,13 +71,16 @@ jobs:
 
             **commit**: ${{ github.sha }}
   deploy:
-    needs: build
+    needs: 
+      - build
+      - release
     permissions:
       id-token: write
     runs-on: ubuntu-latest
-    env:
+    environment:
       name: production
       url: https://pizza.sunchasergame.click
+    env:
       version: ${{needs.build.outputs.version}}
     steps:
       - name: Create OIDC token to AWS

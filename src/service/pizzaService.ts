@@ -4,6 +4,7 @@ enum Role {
   Admin = 'admin',
 }
 
+// Useless comment
 namespace Role {
   export function isRole(user: User | null, role: Role): boolean {
     return user != null && !!user.roles.find((r) => r.role === role);
