@@ -26,6 +26,7 @@ import { pizzaService } from '../service/service';
 import { Role } from '../service/pizzaService';
 import 'preline/preline';
 
+// useless comment
 export default function App() {
   const [user, setUser] = React.useState(null);
   const location = useLocation();
