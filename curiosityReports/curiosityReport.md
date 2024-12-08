@@ -47,3 +47,11 @@ This is generally simpler than our Grafana solution, since the codebase doesn't 
 
 Although, DataDog does require more initial setup for each machine that the metrics need to be collected on. I'm sure we could figure out how to do that for JWT Pizza by changing our automation pipeline to also initialize a DataDog agent. Installation is simple, we would just have to include our API key and site URL as secrets on setup, probably during the GitHub actions workflow.
 
+## Conclusion
+DataDog is a powerful and accessible metrics and observability platform that I believe is much more feature-rich than Grafana. It has the advantage of having built-in integrations that can send metrics without much change to the code at all. 
+
+The idea of having agents that are platform-specific is pretty genius in my opinion. Once a workflow is set up to install and configure the DataDog agent, you never have to think about it again. 
+
+Overall, I would like to try using DataDog for an application from the start. I would like to see how it integrates with other languages and platforms. I also want to explore the other features that are unique from Grafana.
+
+Also, an interesting note: K6 is a feature completely unique to Grafana, but metrics from K6 runs can be sent to a DataDog dashboard. Just another example of how well it is integrated with other technologies.
